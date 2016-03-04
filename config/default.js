@@ -1,9 +1,9 @@
 'use strict'
 
 const cmd = function (alias, description, params) {
-  alias.description = description
-  if (params) { alias.params = params }
-  return alias
+  let item = { alias, description }
+  if (params) { item.params = params }
+  return item
 }
 
 const config = {

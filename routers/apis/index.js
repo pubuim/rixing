@@ -59,15 +59,17 @@ router.post('/command', function* () {
       return this.body = PubuHelper.createMessage(`webhook set as: ${section.webhook}`)
     case 'help':
     default:
-      const toDesription = (key, items) => {
+      const toDesription = (key, value) => {
         return `
-  + ${key}:
-    - description: ${items.description}
-    - usage: /${config.botKey} ${key} ${items.params}
-    - alias: ${items.join(', ')}`
+  **+** **${key}:**
+    **-** **description:** ${value.description}
+    **-** **usage:** \`/${config.botKey} ${key} ${value.params || ''}\`
+    **-** **alias:** \`${value.alias.join(', ')}\``
       }
-      const text = `
-Hi, Tis ${config.botKey}, may i help ya. ${Object.keys(config.cmdKeys).map(key => toDesription(key, config.cmdKeys[key]))}`
+      const text = `**The** **${config.botKey}** **bot** **bless** **ya.**
+\`\`\`
+${Object.keys(config.cmdKeys).map(key => toDesription(key, config.cmdKeys[key]))}
+\`\`\``
       return this.body = PubuHelper.createMessage(text)
   }
 })

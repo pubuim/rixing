@@ -4,7 +4,7 @@ const config = require('config')
 
 exports.matchCommandKey = function () {
   let cmd = Array.from(arguments).compact().join(' ').toCamelCase()
-  return Object.keys(config.cmdKeys).find(key => isKeyMatched(cmd, config.cmdKeys[key]))
+  return Object.keys(config.cmdKeys).find(key => isKeyMatched(cmd, config.cmdKeys[key].alias))
 }
 
 exports.translatePlan = function (text) {
