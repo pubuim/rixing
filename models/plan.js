@@ -59,8 +59,9 @@ planSchema.statics.listTodayTask = function* (section, user) {
   const Plan = mongoose.model('Plan')
   let team = section.team
   let channel = section.channel
-  let today = new Moment().startOf('day')
-  let tomorrow = today.add(1, 'day')
+  let cursor = new Moment().startOf('day')
+  let today = cursor.clone()
+  let tomorrow = cursor.add(1, 'day')
   let plan = yield Plan.findOne({ user: user.oid, team, channel, created: { $gte: today.toDate(), $lt: tomorrow.toDate() } })
   if (!plan) { return [] }
   return plan.tasks
