@@ -77,7 +77,7 @@ schema.statics.new = function (data) {
     throw new Error('channel_id must be a string')
   }
 
-  if (!String.isString(data.user)) {
+  if (!String.isString(data.oid)) {
     throw new Error('user_id must be a string')
   }
 
