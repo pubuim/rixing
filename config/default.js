@@ -21,7 +21,7 @@ const config = {
   botKey: 'hank',
   cmdKeys: {
     // help: ['help', '?', ''],
-    list: ['show', 'list', 'ls', 'l', ''],
+    list: ['show', 'list', 'ls', 'l'],
     vacation: ['vacation', 'vcn', 'v', 'pause', 'p', 'skip'],
     schedule: ['schedule', 'sche', 's'],
     register: ['register', 'reg', 'r', 'signup', 'add', 'a', 'new'],

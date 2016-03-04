@@ -10,10 +10,11 @@ const Vacation = require('../../models/vacation')
 const debug = require('debug')('app:route:idx')
 
 router.post('/command', function* () {
-  let params = this.pickBody('team_id', 'channel_id', 'user_id', 'user_name', 'user_avatar', 'text', true)
+  let params = this.pickBody('team_id', 'channel_id', 'user_id', 'user_name', 'user_avatar', true)
+  params.text = this.request.body.text || ''
 
   let args = params.text.split(' ').compact()
-  let cmd = KeyChecker.matchCommandKey(args.shift())
+  let cmd = KeyChecker.matchCommandKey(args.shift()) || 'list'
   debug(`Invoke command <${cmd}> with [${args}]`)
 
   let section = yield Section.load(params.team_id, params.channel_id)
