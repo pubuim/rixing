@@ -8,8 +8,6 @@ const Plan = require('../../models/plan')
 const User = require('../../models/user')
 const Vacation = require('../../models/vacation')
 
-// arams.text.match(/(\d{2}:?\d{2})[ \/\\\|\-](\d{2}:?\d{2})/)
-
 router.post('/command', function* () {
   let params = this.pickBody('team_id', 'channel_id', 'user_id', 'user_name', 'user_avatar', 'text', true)
 
@@ -42,6 +40,13 @@ router.post('/command', function* () {
       if (!user) { throw new Error('user not registered') }
       yield user.remove()
       return this.body = PubuHelper.createMessage('removed ...')
+    case 'schedule':
+      if (!user) { throw new Error('user not registered') }
+      let exp = args.first
+      if (!exp) { throw new Error('Param "exp" is required') }
+      section.setSchedule(exp)
+      yield section.save()
+      return this.body = PubuHelper.createMessage(`schedule set as: ${section.scheduleText}`)
     case 'hook':
       let webhook = args.first
       if (!webhook) { throw new Error('Param "webhook" is required') }
