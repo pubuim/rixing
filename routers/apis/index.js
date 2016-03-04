@@ -7,17 +7,19 @@ const Section = require('../../models/section')
 const Plan = require('../../models/plan')
 const User = require('../../models/user')
 const Vacation = require('../../models/vacation')
+const debug = require('debug')('app:route:idx')
 
 router.post('/command', function* () {
   let params = this.pickBody('team_id', 'channel_id', 'user_id', 'user_name', 'user_avatar', 'text', true)
 
   let args = params.text.split(' ').compact()
-  let cmd = args.shift()
+  let cmd = KeyChecker.matchCommandKey(args.shift())
+  debug(`Invoke command <${cmd}> with [${args}]`)
 
   let section = yield Section.load(params.team_id, params.channel_id)
   let user = yield User.load(params.user_id)
 
-  switch (KeyChecker.matchCommandKey(cmd)) {
+  switch (cmd) {
     case 'list':
       if (!user) { throw new Error('user not registered') }
       let tasks = yield Plan.listTodayTask(section, user)

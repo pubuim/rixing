@@ -54,4 +54,4 @@ schema.virtual('scheduleText').get(function () {
         this.scheduleEnd[0] + this.scheduleEnd[1] + ':' + this.scheduleEnd[2] + this.scheduleEnd[3]
 })
 
-module.exports = mongoose.model('section', schema)
+module.exports = mongoose.model('Section', schema)
