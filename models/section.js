@@ -1,8 +1,9 @@
 'use strict'
 
 const mongoose = require('mongoose')
+const Schema = mongoose.Schema
 
-const Section = mongoose.model('Section', {
+const schema = new Schema({
   channel: {
     type: String,
     required: true
@@ -31,7 +32,8 @@ const Section = mongoose.model('Section', {
   }
 })
 
-Section.statics.load = function* (team, channel) {
+schema.statics.load = function* (team, channel) {
+  const Section = mongoose.model('Section')
   let section = yield Section.findOne({ team, channel })
   if (!section) {
     section = new Section({ team, channel })
@@ -40,4 +42,4 @@ Section.statics.load = function* (team, channel) {
   return section
 }
 
-module.exports = Section
+module.exports = mongoose.model('section', schema)

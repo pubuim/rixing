@@ -2,8 +2,9 @@
 
 const mongoose = require('mongoose')
 const Moment = require('moment')
+const Schema = mongoose.Schema
 
-const Task = mongoose.model('Task', {
+const taskSchema = new Schema({
   text: {
     type: String,
     required: true
@@ -19,8 +20,8 @@ const Task = mongoose.model('Task', {
   }
 })
 
-const Plan = mongoose.model('Plan', {
-  tasks: [Task],
+const planSchema = new Schema({
+  tasks: [taskSchema],
   user: {
     type: String,
     required: true
@@ -44,7 +45,8 @@ const Plan = mongoose.model('Plan', {
   }
 })
 
-Plan.statics.listTodayTask = function* (section, user) {
+planSchema.statics.listTodayTask = function* (section, user) {
+  const Plan = mongoose.model('Plan')
   let team = section.team
   let channel = section.channel
   let today = new Moment().startOf('day')
@@ -54,10 +56,10 @@ Plan.statics.listTodayTask = function* (section, user) {
   return plan.tasks
 }
 
-Plan.statics.toStatusColor = function* (status) {
+planSchema.statics.toStatusColor = function* (status) {
   if (status === 1) { return 'success' }
   if (status === -1) { return 'error' }
   return 'info'
 }
 
-module.exports = Plan
+module.exports = mongoose.model('Plan', planSchema)
