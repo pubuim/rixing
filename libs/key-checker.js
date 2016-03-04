@@ -41,12 +41,12 @@ function matchList (str) {
 
 function matchState (str) {
   let keyOfDone = config.outPrefixes.stateDone.find(s => str.startsWith(s))
-  if (keyOfDone) { return { key: 'done', prefix: keyOfDone } }
+  if (keyOfDone) { return { key: '1', prefix: keyOfDone } }
   let keyOfPending = config.outPrefixes.statePending.find(s => str.startsWith(s))
-  if (keyOfPending) { return { key: 'pending', prefix: keyOfPending } }
+  if (keyOfPending) { return { key: '0', prefix: keyOfPending } }
   let keyOfQueued = config.outPrefixes.stateQueued.find(s => str.startsWith(s))
-  if (keyOfQueued) { return { key: 'queued', prefix: keyOfQueued } }
-  return { key: 'queued', prefix: '' }
+  if (keyOfQueued) { return { key: '-1', prefix: keyOfQueued } }
+  return { key: '-1', prefix: '' }
 }
 
 function findComment (str) {

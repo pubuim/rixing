@@ -63,71 +63,61 @@ router.post('/command', function* () {
 })
 
 router.post('/outgoing', function* () {
-  const teamId = this.request.body.team_id
-  const channelId = this.request.body.channel_id
-  const userId = this.request.body.user_id
-  const text = this.request.body.text
-  const triggerWord = this.request.body.trigger_word
-
-  console.log('text', text)
-
-  const __lines = KeyChecker.translatePlan(text)
-
-
-  return console.log('translated', __lines)
-
+  const params = this.pickBody('team_id', 'text', 'channel_id', 'user_id', 'user_name', 'user_avatar', true)
+console.log('text', params.text)
+  const lines = KeyChecker.translatePlan(params.text)
+console.log('translated', lines)
   let now = new Date()
 
   now = now.getHours().toString() + now.getMinutes()
 
-  const section = Section.findOne({
-    channel: channelId,
-    user: userId
+  const section = yield Section.findOne({
+    channel: params.channel_id
   })
 
+  now = '1930'
+
   if (now < section.scheduleStart) return this.body = {}
-
-  var startRegexp = /^ *?- */
-
-  const lines = content.split('\n')
-    .filter(line => line && startRegexp.test(line))
-    .map(line => line.replace(startRegexp, ''))
-
-now = '1200'
 
   if (now < section.scheduleEnd) {
     // 早上
     const tasks = lines.map(line => {
       return {
-        text: line,
-        status: 0
+        text: line.text,
+        status: line.status
       }
     })
 
     now = new Date()
 
-    const plan = new Plan({
-      tasks: tasks,
-      user: userId,
-      channel: channelId,
-      team: teamId,
-      created: now,
-      updated: now
-    })
+    let plan = yield Plan.findByDate(params.user_id, now)
+
+    if (plan) {
+      plan.tasks = tasks
+    } else {
+      plan = new Plan({
+        tasks: tasks,
+        user: params.user_id,
+        channel: params.channel_id,
+        team: params.team_id,
+        created: now,
+        updated: now
+      })
+    }
 
     yield plan.save()
 
-    return this.body = {}
+    return this.body = { text: `@[${params.user_name}](user:${params.user_id}) 收到` }
   } else {
     // 晚上
-    const plan = Plan.findByDate(new Date())
+    const plan = yield Plan.findByDate(params.user_id, new Date())
 
     if (!plan) return this.body = {}
 
     lines.forEach((line, i) => {
-      const status = translatePlan()
-
-      plan.tasks[i].status = status
+      var task = plan.tasks[i]
+      task.status = line.status
+      task.comment = line.comment
     })
 
     yield plan.save()
