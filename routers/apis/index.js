@@ -27,7 +27,7 @@ router.post('/command', function* () {
       let tasks = yield Plan.listTodayTask(section, user)
       if (!tasks.length) { return this.body = PubuHelper.createMessage('You have no tasks today') }
       return this.body = PubuHelper.createMessage(`You have ${tasks.length} tasks today`, tasks.map(t => {
-        return { text: t.text, color: Plan.toStatusColor(t.status) }
+        return { title: t.text, description: t.comment, color: Plan.toStatusColor(t.status) }
       }))
     case 'vacation':
       if (!user) { throw new Error('user not registered') }
