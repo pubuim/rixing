@@ -2,48 +2,26 @@
 
 const router = require('koa-router')()
 const PubuHelper = require('../../libs/pubu-helper')
+const KeyChecker = require('../../libs/key-checker')
 const Section = require('../../models/section')
 
-const setHook = function* (next) {
-  let params = this.pickBody('team_id', 'channel_id', 'text', true)
-
-  let section = yield Section.findOne({ team: params.team_id, channel: params.channel_id })
-  if (!section) { section = new Section() }
-  section.webhook = params.text
-  yield section.save()
-
-  this.body = PubuHelper.createMessage(`webhook updated: ${section.webhook}`)
-  yield next
-}
-
-const setSchedule = function* (next) {
-  let params = this.pickBody('team_id', 'channel_id', 'text', true)
-
-  let matched = params.text.match(/(\d{2}:?\d{2})[ \/\\\|\-](\d{2}:?\d{2})/)
-  if (!matched) { throw new Error('invalid schedule expression') }
-
-  let section = yield Section.findOne({ team: params.team_id, channel: params.channel_id })
-  if (!section) { throw new Error('section no not inited') }
-
-  section.scheduleStart = matched[0] + matched[1]
-  section.scheduleEnd = matched[2] + matched[3]
-  yield section.save()
-
-  this.body = PubuHelper.createMessage(`schedule updated: ${section.scheduleStart}~${section.scheduleEnd}`)
-  yield next
-}
+// arams.text.match(/(\d{2}:?\d{2})[ \/\\\|\-](\d{2}:?\d{2})/)
 
 router.post('/command', function* () {
-  const teamId = this.request.body.team_id
-  const channelId = this.request.body.channel_id
-  const userId = this.request.body.user_id
-  const text = this.request.body.text
+  let params = this.pickBody('team_id', 'channel_id', 'user_id', 'user_name', 'user_avatar', 'text', true)
 
-  const splited = text.split(' ')
+  let args = params.text.split(' ').compact()
+  let cmd = args.shift()
 
-  const commandName = splited[0] || 'ls'
-  const commandOptions = splited[1]
-
+  switch (KeyChecker.matchCommandKey(cmd)) {
+    case 'list':
+    case 'vacation':
+    case 'register':
+    case 'clear':
+    case 'hook':
+    default:
+      throw new Error(`unsupported command: ${cmd}`)
+  }
 })
 
 router.post('/outgoing', function* () {

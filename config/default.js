@@ -18,20 +18,22 @@ const config = {
     }
   },
 
+  botKey: 'hank',
   cmdKeys: {
-    botKey: 'hank',
-
-    listPrefix: [/^\s*(?:\-|\+)?\s*$/],
-    stateDonePrefix: ['√', '[x]', 'done', 'ok'],
-    statePendingPrefix: [/^\.{1,3}(?:pending)?$/, '[-]'],
-    stateQueuedPrefix: ['x', '[ ]', 'queued', 'no', '✖'],
-    commentPrefix: [/\|\s*\S+/],
-
-    configKey: ['config', 'conf', 'cfg'],
-    listKey: ['show', 'list', 'ls', 'l', ''],
-    vacationKey: ['vacation', 'vcn', 'v', 'pause', 'p', 'skip'],
-    registerKey: ['register', 'reg', 'r', 'signup', 'add', 'a', 'new'],
-    clearKey: ['clear', 'clean', 'clr', 'c', 'k']
+    // help: ['help', '?', ''],
+    list: ['show', 'list', 'ls', 'l', ''],
+    vacation: ['vacation', 'vcn', 'v', 'pause', 'p', 'skip'],
+    schedule: ['schedule', 'sche', 's'],
+    register: ['register', 'reg', 'r', 'signup', 'add', 'a', 'new'],
+    clear: ['clear', 'clean', 'clr', 'c', 'k'],
+    hook: ['webhook', 'hook', 'h']
+  },
+  outPrefixes: {
+    list: ['-', '+'],
+    stateDone: ['√', '[x]', 'done', 'ok'],
+    statePending: ['[-]', '[..]', '[...]', 'pending'],
+    stateQueued: ['x', '[ ]', 'queued'],
+    comment: ['|', '//', '::'],
   }
 }
 

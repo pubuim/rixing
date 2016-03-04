@@ -53,8 +53,8 @@ schema.statics.mapData = function (data) {
     result.name = data.user_name
   }
 
-  if (data.avatar) {
-    result.avatar = data.avatar
+  if (data.user_avatar) {
+    result.avatar = data.user_avatar
   }
 
   return result

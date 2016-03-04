@@ -5,7 +5,7 @@ const config = require('config')
 exports.createMessage = function (text, items) {
   let msg = {
     text,
-    username: config.cmdKeys.botKey,
+    username: config.botKey,
     icon_url: config.icon || ''
   }
   if (items && items.length) {
