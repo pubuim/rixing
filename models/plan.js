@@ -45,6 +45,16 @@ const planSchema = new Schema({
   }
 })
 
+planSchema.statics.findByDate = function* (section, date) {
+  const Plan = mongoose.model('Plan')
+  let team = section.team
+  let channel = section.channel
+  let today = new Moment(date).startOf('day')
+  let tomorrow = today.add(1, 'day')
+  let plan = yield Plan.findOne({ user: user.oid, team, channel, created: { $gte: today.toDate(), $lt: tomorrow.toDate() } })
+  return plan
+}
+
 planSchema.statics.listTodayTask = function* (section, user) {
   const Plan = mongoose.model('Plan')
   let team = section.team

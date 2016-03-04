@@ -8,6 +8,7 @@ const Plan = require('../../models/plan')
 const User = require('../../models/user')
 const Vacation = require('../../models/vacation')
 const debug = require('debug')('app:route:idx')
+const Moment = require('moment')
 
 router.post('/command', function* () {
   let params = this.pickBody('team_id', 'channel_id', 'user_id', 'user_name', 'user_avatar', true)
@@ -68,7 +69,12 @@ router.post('/outgoing', function* () {
   const text = this.request.body.text
   const triggerWord = this.request.body.trigger_word
 
-  const content = text.replace(triggerWord, '')
+  console.log('text', text)
+
+  const __lines = KeyChecker.translatePlan(text)
+
+
+  return console.log('translated', __lines)
 
   let now = new Date()
 
@@ -87,12 +93,14 @@ router.post('/outgoing', function* () {
     .filter(line => line && startRegexp.test(line))
     .map(line => line.replace(startRegexp, ''))
 
-  // if (now < section.scheduleEnd) {
+now = '1200'
 
+  if (now < section.scheduleEnd) {
+    // 早上
     const tasks = lines.map(line => {
       return {
         text: line,
-        status: 1
+        status: 0
       }
     })
 
@@ -110,23 +118,22 @@ router.post('/outgoing', function* () {
     yield plan.save()
 
     return this.body = {}
-  // } else {
-  //   const plan = (yield Plan.find({
-  //     user: userId
-  //   }).sort('-created').limit(1))[0]
-  //
-  //   if (!plan) return this.body = {}
-  //
-  //   lines.forEach((line, i) => {
-  //     const status = 1
-  //
-  //     plan.tasks[i].status = status
-  //   })
-  //
-  //   yield plan.save()
-  //
-  //   return this.body = {}
-  // }
+  } else {
+    // 晚上
+    const plan = Plan.findByDate(new Date())
+
+    if (!plan) return this.body = {}
+
+    lines.forEach((line, i) => {
+      const status = translatePlan()
+
+      plan.tasks[i].status = status
+    })
+
+    yield plan.save()
+
+    return this.body = {}
+  }
 })
 
 module.exports = router
