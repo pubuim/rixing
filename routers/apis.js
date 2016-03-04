@@ -10,7 +10,7 @@ router.use(function* (next) {
   try {
     yield next
   } catch (err) {
-    this.body = err.message
+    this.body = { text: err.message, error: true }
     this.app.emit('error', err, this)
   }
 })
