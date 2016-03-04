@@ -30,15 +30,15 @@ exports.translatePlan = function (text) {
 }
 
 function isList (str) {
-  return config.outPrefixes.list.some(s => str.startWith(s))
+  return config.outPrefixes.list.some(s => str.startsWith(s))
 }
 
 function matchState (str) {
-  let keyOfDone = config.outPrefixes.stateDone.find(s => str.startWith(s))
+  let keyOfDone = config.outPrefixes.stateDone.find(s => str.startsWith(s))
   if (keyOfDone) { return { key: 'done', prefix: keyOfDone } }
-  let keyOfPending = config.outPrefixes.statePending.find(s => str.startWith(s))
+  let keyOfPending = config.outPrefixes.statePending.find(s => str.startsWith(s))
   if (keyOfPending) { return { key: 'pending', prefix: keyOfPending } }
-  let keyOfQueued = config.outPrefixes.stateQueued.find(s => str.startWith(s))
+  let keyOfQueued = config.outPrefixes.stateQueued.find(s => str.startsWith(s))
   if (keyOfQueued) { return { key: 'queued', prefix: keyOfQueued } }
 }
 
