@@ -1,5 +1,7 @@
 'use strict'
 
+require('node-extensions')
+
 const less = require('koa-less')
 const serve = require('koa-static')
 const koa = require('koa')
