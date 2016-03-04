@@ -1,0 +1,37 @@
+{
+  "name": "rixing",
+  "version": "0.0.1",
+  "private": true,
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@gitlab.com/pubu/rixing.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://gitlab.com/pubu/rixing/issues"
+  },
+  "homepage": "https://gitlab.com/pubu/rixing#README",
+  "dependencies": {
+    "bluebird": "^3.3.3",
+    "config": "^1.19.0",
+    "koa": "^1.2.0",
+    "koa-bodyparser": "^2.0.1",
+    "koa-jade": "^2.1.0",
+    "koa-less": "0.0.3",
+    "koa-router": "^5.4.0",
+    "koa-session": "^3.3.1",
+    "koa-static": "^2.0.0",
+    "mongoose": "^4.4.6",
+    "node-extensions": "^1.10.1",
+    "requere": "^0.1.4"
+  },
+  "devDependencies": {
+    "eslint": "^2.2.0"
+  }
+}
