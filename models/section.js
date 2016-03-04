@@ -42,4 +42,16 @@ schema.statics.load = function* (team, channel) {
   return section
 }
 
+schema.methods.setSchedule = function (schedule) {
+  let mathced = schedule.match(/(\d{2}:?\d{2})[\/\\\|\-~](\d{2}:?\d{2})/)
+  this.scheduleStart = mathced[0] + mathced[1]
+  this.scheduleEnd = mathced[2] + mathced[3]
+}
+
+schema.virtual('scheduleText').get(function () {
+  return this.scheduleStart[0] + this.scheduleStart[1] + ':' + this.scheduleStart[2] + this.scheduleStart[3] +
+            ' ~ ' +
+        this.scheduleEnd[0] + this.scheduleEnd[1] + ':' + this.scheduleEnd[2] + this.scheduleEnd[3]
+})
+
 module.exports = mongoose.model('section', schema)
