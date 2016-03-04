@@ -13,8 +13,8 @@ const taskSchema = new Schema({
     type: String
   },
   status: {
-    type: Number,
-    enum: [-1, 0, 1], // -1 未完成, 0 进行中, 1 已完成
+    type: String,
+    enum: ['-1', '0', '1'], // -1 未完成, 0 进行中, 1 已完成
     required: true,
     default: -1
   }
@@ -46,13 +46,11 @@ const planSchema = new Schema({
   }
 })
 
-planSchema.statics.findByDate = function* (section, date) {
+planSchema.statics.findByDate = function* (userId, date) {
   const Plan = mongoose.model('Plan')
-  let team = section.team
-  let channel = section.channel
   let today = new Moment(date).startOf('day')
-  let tomorrow = today.add(1, 'day')
-  let plan = yield Plan.findOne({ user: user.oid, team, channel, created: { $gte: today.toDate(), $lt: tomorrow.toDate() } })
+  let tomorrow = today.clone().add(1, 'day')
+  let plan = yield Plan.findOne({ user: userId, created: { $gte: today.toDate(), $lt: tomorrow.toDate() } })
   return plan
 }
 
@@ -69,8 +67,8 @@ planSchema.statics.listTodayTask = function* (section, user) {
 }
 
 planSchema.statics.toStatusColor = function* (status) {
-  if (status === 1) { return 'success' }
-  if (status === -1) { return 'error' }
+  if (status === '1') { return 'success' }
+  if (status === '-1') { return 'error' }
   return 'info'
 }
 
