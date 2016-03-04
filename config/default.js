@@ -11,6 +11,13 @@ const config = {
     maxAge: 86400 * 30 // 1 month
   },
 
+  database: {
+    dsn: 'mongodb://localhost/rixing',
+    options: {
+      server: {auto_reconnect: true}
+    }
+  },
+
   cmdKeys: {
     botKey: 'hank',
 

@@ -1,6 +1,7 @@
 'use strict'
 
 require('node-extensions')
+require('./bootstrap')
 
 const config = require('config')
 const koa = require('koa')
