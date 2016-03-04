@@ -69,7 +69,7 @@ planSchema.statics.listTodayTask = function* (section, user) {
 planSchema.statics.toStatusColor = function (status) {
   if (status === '1') { return 'success' }
   if (status === '-1') { return 'primary' }
-  return 'info'
+  return 'warning'
 }
 
 module.exports = mongoose.model('Plan', planSchema)
