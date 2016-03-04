@@ -33,10 +33,26 @@ const setSchedule = function* (next) {
   yield next
 }
 
-router.post('/set_hook', setHook)
-router.put('/set_hook', setHook)
+router.post('/command', function* () {
+  const teamId = this.request.body.team_id
+  const channelId = this.request.body.channel_id
+  const userId = this.request.body.user_id
+  const text = this.request.body.text
 
-router.post('/set_schedule', setSchedule)
-router.put('/set_schedule', setSchedule)
+  const splited = text.split(' ')
+
+  const commandName = splited[0] || 'ls'
+  const commandOptions = splited[1]
+
+})
+
+router.post('/outgoing', function* () {
+  const teamId = this.request.body.team_id
+  const channelId = this.request.body.channel_id
+  const userId = this.request.body.user_id
+  const text = this.request.body.text
+  const triggerWord = this.request.body.triggerWord
+
+})
 
 module.exports = router
