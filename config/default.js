@@ -12,7 +12,7 @@ const config = {
   },
 
   database: {
-    dsn: 'mongodb://localhost/rixing',
+    dsn: process.env.DB_DSN || 'mongodb://localhost/rixing',
     options: {
       server: {auto_reconnect: true}
     }
@@ -36,6 +36,5 @@ const config = {
     comment: ['|', '//', '::'],
   }
 }
-
 
 module.exports = config
