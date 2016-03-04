@@ -12,7 +12,7 @@ const config = {
   },
 
   database: {
-    dsn: 'mongodb://localhost/rixing',
+    dsn: process.env.DB_DSN || 'mongodb://localhost/rixing',
     options: {
       server: {auto_reconnect: true}
     }
@@ -34,6 +34,5 @@ const config = {
     clearKey: ['clear', 'clean', 'clr', 'c', 'k']
   }
 }
-
 
 module.exports = config
