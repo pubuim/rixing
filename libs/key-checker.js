@@ -9,28 +9,34 @@ exports.matchCommandKey = function () {
 
 exports.translatePlan = function (text) {
   if (!text) { return null }
+
   return text.split(/[\r\n]+/g)
     .map(s => s.trim())
     .compact()
-    .filter(isList)
+    .map(s => {
+      let prefix = matchList(s)
+      if (!prefix) { return null }
+      return s.replace(prefix, '').trim()
+    })
+    .compact()
     .map(s => {
       let state = matchState(s)
       if (!state) { return null }
       let text = s.replace(state.prefix, '')
       if (!text) { return null }
-      let item = { status: state.key, text }
+      let item = { status: state.key, text: text.trim() }
       let comment = findComment(s)
       if (comment) {
         item.comment = comment
-        item.text = item.text.replace(comment, '')
+        item.text = item.text.replace(comment, '').trim()
       }
       return item
     })
     .compact()
 }
 
-function isList (str) {
-  return config.outPrefixes.list.some(s => str.startsWith(s))
+function matchList (str) {
+  return config.outPrefixes.list.find(s => str.startsWith(s))
 }
 
 function matchState (str) {
@@ -40,6 +46,7 @@ function matchState (str) {
   if (keyOfPending) { return { key: 'pending', prefix: keyOfPending } }
   let keyOfQueued = config.outPrefixes.stateQueued.find(s => str.startsWith(s))
   if (keyOfQueued) { return { key: 'queued', prefix: keyOfQueued } }
+  return { key: 'queued', prefix: '' }
 }
 
 function findComment (str) {
