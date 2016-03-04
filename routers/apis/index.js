@@ -2,10 +2,13 @@
 
 const router = require('koa-router')()
 
-router.get('/set_hooks', function* (next) {
-  this.body = {}
+const setHooks = function* (next) {
+  this.body = this.request.body
 
   yield next
-})
+}
+
+router.post('/set_hooks', setHooks)
+router.put('/set_hooks', setHooks)
 
 module.exports = router
