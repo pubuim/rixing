@@ -3,10 +3,6 @@
 const mongoose = require('mongoose')
 
 const Task = mongoose.model('Task', {
-  index: {
-    type: Number,
-    required: true
-  },
   text: {
     type: String,
     required: true
@@ -19,6 +15,14 @@ const Task = mongoose.model('Task', {
     enum: [-1, 0, 1], // -1 未完成, 0 进行中, 1 已完成
     required: true,
     default: -1
+  }
+})
+
+const Plan = mongoose.model('Plan', {
+  tasks: [Task],
+  user: {
+    type: String,
+    required: true
   },
   channel: {
     type: String,
@@ -39,4 +43,4 @@ const Task = mongoose.model('Task', {
   }
 })
 
-module.exports = Task
+module.exports = Plan
