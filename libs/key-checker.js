@@ -15,16 +15,14 @@ exports.translatePlan = function (text) {
     .compact()
     .map(s => {
       let prefix = matchList(s)
-      if (!prefix) { return null }
+      if (!prefix) { return }
       return s.replace(prefix, '').trim()
     })
     .compact()
     .map(s => {
       let state = matchState(s)
-      if (!state) { return null }
       let text = s.replace(state.prefix, '')
-      if (!text) { return null }
-      let item = { status: state.key, text: text.trim() }
+      let item = { status: state.status, text: text.trim() }
       let mark = findComment(s)
       if (mark) {
         let pieces = item.text.split(mark)
@@ -33,7 +31,6 @@ exports.translatePlan = function (text) {
       }
       return item
     })
-    .compact()
 }
 
 function matchList (str) {
@@ -42,12 +39,12 @@ function matchList (str) {
 
 function matchState (str) {
   let keyOfDone = config.outPrefixes.stateDone.find(s => str.startsWith(s))
-  if (keyOfDone) { return { key: '1', prefix: keyOfDone } }
+  if (keyOfDone) { return { status: '1', prefix: keyOfDone } }
   let keyOfPending = config.outPrefixes.statePending.find(s => str.startsWith(s))
-  if (keyOfPending) { return { key: '0', prefix: keyOfPending } }
+  if (keyOfPending) { return { status: '0', prefix: keyOfPending } }
   let keyOfQueued = config.outPrefixes.stateQueued.find(s => str.startsWith(s))
-  if (keyOfQueued) { return { key: '-1', prefix: keyOfQueued } }
-  return { key: '-1', prefix: '' }
+  if (keyOfQueued) { return { status: '-1', prefix: keyOfQueued } }
+  return { status: '-1', prefix: '' }
 }
 
 function findComment (str) {
