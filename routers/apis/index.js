@@ -65,8 +65,67 @@ router.post('/outgoing', function* () {
   const channelId = this.request.body.channel_id
   const userId = this.request.body.user_id
   const text = this.request.body.text
-  const triggerWord = this.request.body.triggerWord
+  const triggerWord = this.request.body.trigger_word
 
+  const content = text.replace(triggerWord, '')
+
+  let now = new Date()
+
+  now = now.getHours().toString() + now.getMinutes()
+
+  const section = Section.findOne({
+    channel: channelId,
+    user: userId
+  })
+
+  if (now < section.scheduleStart) return this.body = {}
+
+  var startRegexp = /^ *?- */
+
+  const lines = content.split('\n')
+    .filter(line => line && startRegexp.test(line))
+    .map(line => line.replace(startRegexp, ''))
+
+  // if (now < section.scheduleEnd) {
+
+    const tasks = lines.map(line => {
+      return {
+        text: line,
+        status: 1
+      }
+    })
+
+    now = new Date()
+
+    const plan = new Plan({
+      tasks: tasks,
+      user: userId,
+      channel: channelId,
+      team: teamId,
+      created: now,
+      updated: now
+    })
+
+    yield plan.save()
+
+    return this.body = {}
+  // } else {
+  //   const plan = (yield Plan.find({
+  //     user: userId
+  //   }).sort('-created').limit(1))[0]
+  //
+  //   if (!plan) return this.body = {}
+  //
+  //   lines.forEach((line, i) => {
+  //     const status = 1
+  //
+  //     plan.tasks[i].status = status
+  //   })
+  //
+  //   yield plan.save()
+  //
+  //   return this.body = {}
+  // }
 })
 
 module.exports = router
