@@ -1,5 +1,11 @@
 'use strict'
 
+const cmd = function (alias, description, params) {
+  alias.description = description
+  if (params) { alias.params = params }
+  return alias
+}
+
 const config = {
   debug: process.env.NODE_ENV === 'development',
 
@@ -20,20 +26,30 @@ const config = {
 
   botKey: 'hank',
   cmdKeys: {
-    // help: ['help', '?', ''],
-    list: ['show', 'list', 'ls', 'l'],
-    vacation: ['vacation', 'vcn', 'v', 'pause', 'p', 'skip'],
-    schedule: ['schedule', 'sche', 's'],
-    register: ['register', 'reg', 'r', 'signup', 'add', 'a', 'new'],
-    clear: ['clear', 'clean', 'clr', 'c', 'k'],
-    hook: ['webhook', 'hook', 'h']
+    help: cmd(['help', '?'],
+      'Show the command help.'),
+    list: cmd(['show', 'list', 'ls', 'l'],
+      'List all your tasks today.'),
+    vacation: cmd(['vacation', 'vcn', 'v', 'pause', 'p', 'skip'],
+      'Add a vacation without auto-check mentions.',
+        'date # moment date pattern'),
+    schedule: cmd(['schedule', 'sche', 's'],
+      'Set section auto-check mentions\' schedule.',
+        'datefield # HHmm-HHmm'),
+    register: cmd(['register', 'reg', 'r', 'signup', 'add', 'a', 'new'],
+      'Register self for auto-check mention.'),
+    clear: cmd(['clear', 'clean', 'clr', 'c', 'k'],
+      'Unregister slef for auto-check mention.'),
+    hook: cmd(['webhook', 'hook', 'h'],
+      'Setup webhook url.',
+        'url # standard url pattern')
   },
   outPrefixes: {
     list: ['-', '+'],
     stateDone: ['√', '[x]', 'done', 'ok'],
     statePending: ['[-]', '[..]', '[...]', 'pending'],
     stateQueued: ['x', '[ ]', 'queued'],
-    comment: ['|', '//', '::'],
+    comment: ['|', '//', '::', '#', '--'],
   }
 }
 

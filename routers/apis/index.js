@@ -8,7 +8,7 @@ const Plan = require('../../models/plan')
 const User = require('../../models/user')
 const Vacation = require('../../models/vacation')
 const debug = require('debug')('app:route:idx')
-const Moment = require('moment')
+const config = require('config')
 
 router.post('/command', function* () {
   let params = this.pickBody('team_id', 'channel_id', 'user_id', 'user_name', 'user_avatar', true)
@@ -57,8 +57,18 @@ router.post('/command', function* () {
       section.webhook = webhook
       yield section.save()
       return this.body = PubuHelper.createMessage(`webhook set as: ${section.webhook}`)
+    case 'help':
     default:
-      throw new Error(`unsupported command: ${cmd}`)
+      const toDesription = (key, items) => {
+        return `
+  + ${key}:
+    - description: ${items.description}
+    - usage: /${config.botKey} ${key} ${items.params}
+    - alias: ${items.join(', ')}`
+      }
+      const text = `
+Hi, Tis ${config.botKey}, may i help ya. ${Object.keys(config.cmdKeys).map(key => toDesription(key, config.cmdKeys[key]))}`
+      return this.body = PubuHelper.createMessage(text)
   }
 })
 
