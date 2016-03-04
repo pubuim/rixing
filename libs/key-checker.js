@@ -25,10 +25,11 @@ exports.translatePlan = function (text) {
       let text = s.replace(state.prefix, '')
       if (!text) { return null }
       let item = { status: state.key, text: text.trim() }
-      let comment = findComment(s)
-      if (comment) {
-        item.comment = comment
-        item.text = item.text.replace(comment, '').trim()
+      let mark = findComment(s)
+      if (mark) {
+        let pieces = item.text.split(mark)
+        item.text = pieces.shift().trim()
+        item.comment = pieces.join(mark).trim()
       }
       return item
     })
@@ -51,7 +52,7 @@ function matchState (str) {
 
 function findComment (str) {
   let keyOfComment = config.outPrefixes.comment.find(s => str.includes(s))
-  if (keyOfComment) { return str.substring(str.indexOf(keyOfComment)) }
+  if (keyOfComment) { return keyOfComment }
 }
 
 function isKeyMatched (exp, matcher) {
