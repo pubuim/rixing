@@ -5,7 +5,7 @@ const PubuHelper = require('../../libs/pubu-helper')
 const Section = require('../../models/section')
 
 const setHook = function* (next) {
-  let params = this.pickBody('team_id', 'channel_id', 'text')
+  let params = this.pickBody('team_id', 'channel_id', 'text', true)
 
   let section = yield Section.findOne({ team: params.team_id, channel: params.channel_id })
   if (!section) { section = new Section() }
@@ -17,7 +17,7 @@ const setHook = function* (next) {
 }
 
 const setSchedule = function* (next) {
-  let params = this.pickBody('team_id', 'channel_id', 'text')
+  let params = this.pickBody('team_id', 'channel_id', 'text', true)
 
   let matched = params.text.match(/(\d{2}:?\d{2})[ \/\\\|\-](\d{2}:?\d{2})/)
   if (!matched) { throw new Error('invalid schedule expression') }
