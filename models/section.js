@@ -11,6 +11,9 @@ const Section = mongoose.model('Section', {
     type: String,
     required: true
   },
+  webhook: {
+    type: String
+  },
   scheduleStart: {
     type: String,
     required: true,
