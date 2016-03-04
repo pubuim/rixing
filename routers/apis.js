@@ -8,7 +8,7 @@ const router = require('koa-router')({
 
 router.use(function* (next) {
   try {
-    yield next;
+    yield next
   } catch (err) {
     this.status = err.status || 500
     this.body = err.message

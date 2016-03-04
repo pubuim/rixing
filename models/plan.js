@@ -1,6 +1,7 @@
 'use strict'
 
 const mongoose = require('mongoose')
+const Moment = require('moment')
 
 const Task = mongoose.model('Task', {
   text: {
@@ -42,5 +43,21 @@ const Plan = mongoose.model('Plan', {
     required: true
   }
 })
+
+Plan.statics.listTodayTask = function* (section, user) {
+  let team = section.team
+  let channel = section.channel
+  let today = new Moment().startOf('day')
+  let tomorrow = today.add(1, 'day')
+  let plan = yield Plan.findOne({ user: user.oid, team, channel, created: { $gte: today.toDate(), $lt: tomorrow.toDate() } })
+  if (!plan) { return [] }
+  return plan.tasks
+}
+
+Plan.statics.toStatusColor = function* (status) {
+  if (status === 1) { return 'success' }
+  if (status === -1) { return 'error' }
+  return 'info'
+}
 
 module.exports = Plan

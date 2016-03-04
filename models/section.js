@@ -31,4 +31,13 @@ const Section = mongoose.model('Section', {
   }
 })
 
+Section.statics.load = function* (team, channel) {
+  let section = yield Section.findOne({ team, channel })
+  if (!section) {
+    section = new Section({ team, channel })
+    yield section.save()
+  }
+  return section
+}
+
 module.exports = Section

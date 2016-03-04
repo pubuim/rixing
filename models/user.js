@@ -92,8 +92,11 @@ schema.statics.new = function (data) {
   return new User(data)
 }
 
+schema.statics.load = function* (oid) {
+  const User = mongoose.model('User')
+  return yield User.findOne({ oid })
+}
+
 const User = mongoose.model('User', schema)
-
-
 
 module.exports = User
