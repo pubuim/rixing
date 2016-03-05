@@ -3,6 +3,7 @@
 const router = require('koa-router')()
 const PubuHelper = require('../../libs/pubu-helper')
 const KeyChecker = require('../../libs/key-checker')
+const swearwordsGenerator = require('../../libs/swearwords-generator')
 const Section = require('../../models/section')
 const Plan = require('../../models/plan')
 const User = require('../../models/user')
@@ -15,7 +16,8 @@ router.post('/command', function* () {
   params.text = this.request.body.text || ''
 
   let args = params.text.split(' ').compact()
-  let cmd = KeyChecker.matchCommandKey(args.shift()) || 'list'
+  let cmd = args.shift() || 'list'
+  cmd = KeyChecker.matchCommandKey(cmd)
   debug(`Invoke command <${cmd}> with [${args}]`)
 
   let section = yield Section.load(params.team_id, params.channel_id)
@@ -57,6 +59,8 @@ router.post('/command', function* () {
       section.webhook = webhook
       yield section.save()
       return this.body = PubuHelper.createMessage(`webhook set as: ${section.webhook}`)
+    case 'fuck':
+      return this.body = PubuHelper.createMessage(swearwordsGenerator())
     case 'help':
     default:
       const toDesription = (key, value) => {
@@ -66,8 +70,7 @@ router.post('/command', function* () {
     **-** **usage:** \`/${config.botKey} ${key} ${value.params || ''}\`
     **-** **alias:** \`${value.alias.join(', ')}\``
       }
-      const text = `**The** **${config.botKey}** **bot** **bless** **ya.**
-\`\`\`
+      const text = `\`\`\`
 ${Object.keys(config.cmdKeys).map(key => toDesription(key, config.cmdKeys[key]))}
 \`\`\``
       return this.body = PubuHelper.createMessage(text)

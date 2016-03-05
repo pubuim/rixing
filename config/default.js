@@ -1,7 +1,8 @@
 'use strict'
 
 const cmd = function (alias, description, params) {
-  let item = { alias, description }
+  let item = { alias }
+  if (description) { item.description = description }
   if (params) { item.params = params }
   return item
 }
@@ -45,7 +46,8 @@ const config = {
       'Unregister slef for auto-check mention.'),
     hook: cmd(['webhook', 'hook', 'h'],
       'Setup webhook url.',
-        'url # standard url pattern')
+        'url # standard url pattern'),
+    fuck: cmd(['fuck', 'fucku', 'fuckya', 'hell', 'fck', 'wtf'])
   },
   outPrefixes: {
     list: ['-', '+'],
