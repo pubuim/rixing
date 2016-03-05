@@ -4,12 +4,10 @@
 require('../bootstrap')
 
 const Moment = require('moment')
+const config = require('config')
 const moment = new Moment()
 const date = moment.format('YYYYMMDD')
 const time = moment.format('HHmm')
-
-process.stdout.write(`Ready to check at ${date}${time}\n`)
-
 const Promise = require('bluebird')
 const request = function (url, data) {
   return new Promise(function (res, rej) {
@@ -19,39 +17,53 @@ const request = function (url, data) {
     })
   })
 }
-
 const Section = require('../models/section')
 const User = require('../models/user')
 const Vacation = require('../models/vacation')
 const PubuHelper = require('../libs/pubu-helper')
+const hintTime = Section.toScheduleHintTime(time)
 
-Section.find({ webhook: { $exists: true }, $or: [ { scheduleStart: time }, { scheduleEnd: time } ] })
-  .then(sections => {
-    return Promise.all(sections.map(s => {
-      return Vacation.find({ team: s.team, channel: s.channel, date }, { user: 1 })
-        .then(vacations => {
-          let vuids = vacations.pluck('user')
-          return User.find({ team: s.team, channel: s.channel, oid: { $nin: vuids } }, { oid: 1, name: 1 })
-            .then(users => {
-              if (!users.length) { return }
-              let mentions = users.map(u => u.toMention())
-              if (s.scheduleStart === date) {
-                process.stdout.write(`sent for morning: ${s.team} ${s.channel} \n`)
-                return request(
-                  s.webhook,
-                  PubuHelper.createStableMessage(`Morning, ${mentions.join(' ')} . \nWhat's your plans today`)
-                )
-              } else if (s.scheduleEnd === date) {
-                process.stdout.write(`sent for evening: ${s.team} ${s.channel} \n`)
-                return request(
-                  s.webhook,
-                  PubuHelper.createStableMessage(`Evening, ${mentions.join(' ')} . \nShow me your ass`)
-                )
-              }
-            })
-        })
-    }))
-  })
+process.stdout.write(`Ready to check at ${date}${time} (hint time: ${hintTime})\n`)
+
+Promise.all([
+  Section.find({ webhook: { $exists: true }, $or: [ { scheduleStart: time }, { scheduleEnd: time } ] })
+    .then(sections => {
+      return Promise.all(sections.map(s => {
+        return Vacation.find({ team: s.team, channel: s.channel, date }, { user: 1 })
+          .then(vacations => {
+            let vuids = vacations.pluck('user')
+            return User.find({ team: s.team, channel: s.channel, oid: { $nin: vuids } }, { oid: 1, name: 1 })
+              .then(users => {
+                if (!users.length) { return }
+                let mentions = users.map(u => u.toMention())
+                if (s.scheduleStart === date) {
+                  process.stdout.write(`sent for morning: ${s.team} ${s.channel} \n`)
+                  return request(
+                    s.webhook,
+                    PubuHelper.createStableMessage(`Morning, ${mentions.join(' ')} . \nWhat's your plans today`)
+                  )
+                } else if (s.scheduleEnd === date) {
+                  process.stdout.write(`sent for evening: ${s.team} ${s.channel} \n`)
+                  return request(
+                    s.webhook,
+                    PubuHelper.createStableMessage(`Evening, ${mentions.join(' ')} . \nShow me your ass`)
+                  )
+                }
+              })
+          })
+      }))
+    }),
+  Section.find({ webhook: { $exists: true }, $or: [ { scheduleStart: hintTime }, { scheduleEnd: hintTime } ] })
+    .then(sections => {
+      return Promise.all(sections.map(s => {
+        let url = `${config.siteUrl}/${s.channel}/${moment.format('YYYY-MM-DD')}`
+        return request(
+          s.webhook,
+          PubuHelper.createStableMessage(`Today\'s task report: <a href="${url}">${url}</a>`)
+        )
+      }))
+    })
+])
   .then(function () {
     process.stdout.write('Done', '\n')
     process.exit()

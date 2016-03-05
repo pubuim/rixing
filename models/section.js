@@ -2,7 +2,7 @@
 
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
-const PubuHelper = require('../libs/pubu-helper')
+const Moment = require('moment')
 
 const schema = new Schema({
   channel: {
@@ -53,6 +53,14 @@ schema.virtual('scheduleText').get(function () {
   return this.scheduleStart[0] + this.scheduleStart[1] + ':' + this.scheduleStart[2] + this.scheduleStart[3] +
             ' ~ ' +
         this.scheduleEnd[0] + this.scheduleEnd[1] + ':' + this.scheduleEnd[2] + this.scheduleEnd[3]
+})
+
+schema.statics.toScheduleHintTime = function (time) {
+  return new Moment(time, 'HHmm').add(1, 'hour').format('HHmm')
+}
+
+schema.virtual('scheduleHintTime').get(function () {
+  return schema.statics.toScheduleHintTime(this.scheduleEnd)
 })
 
 module.exports = mongoose.model('Section', schema)

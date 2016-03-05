@@ -24,6 +24,8 @@ const config = {
     }
   },
 
+  siteUrl: 'http://localhost:4000',
+
   icon: 'http://f.pubu.im/sunshine/avatar.png',
   botKey: 'hank',
   cmdKeys: {
