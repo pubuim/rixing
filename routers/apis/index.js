@@ -76,9 +76,9 @@ ${Object.keys(config.cmdKeys).map(key => toDesription(key, config.cmdKeys[key]))
 
 router.post('/outgoing', function* () {
   const params = this.pickBody('team_id', 'text', 'channel_id', 'user_id', 'user_name', 'user_avatar', true)
-console.log('text', params.text)
+
   const lines = KeyChecker.translatePlan(params.text)
-console.log('translated', lines)
+
   let now = new Date()
 
   now = now.getHours().toString() + now.getMinutes()
@@ -86,8 +86,6 @@ console.log('translated', lines)
   const section = yield Section.findOne({
     channel: params.channel_id
   })
-
-  now = '1930'
 
   if (now < section.scheduleStart) return this.body = {}
 

@@ -1,6 +1,39 @@
 html
   head
     meta(charset='utf-8')
-    title 日省
+    meta(
+      name='viewport',
+      content='initial-scale=1.0,user-scalable=no,maximum-scale=1,width=device-width'
+    )
+    title 日省 | Sunshine
+    link(
+      rel='icon',
+      type='image/x-icon',
+      href='/images/favicon.ico'
+    )
+    link(rel='stylesheet', href='/style/index.css')
   body
-    | hello
+    header.header
+      .header-body
+        h1
+          a.logo(href='/')
+        .date-nav
+          a.button-pre-day(href=date.clone().add(-1, 'day').format('YYYY-MM-DD'))
+          .date= date.format('M月D日')
+          a.button-next-day(href=date.clone().add(1, 'day').format('YYYY-MM-DD'))
+    .page-body
+      .plans-columns
+        each plans in plansColumns
+          .plans-column
+            each plan in plans
+              .plan
+                .plan-header
+                  img.plan-avatar(src=plan.avatar)
+                  .plan-username= plan.username
+                .plan-body
+                  ul.plan-tasks
+                    each task in plan.tasks
+                      li.plan-task(class='status' + task.status)
+                        .plan-task-text= task.text
+                        if task.comment
+                          .plan-task-comment= task.comment

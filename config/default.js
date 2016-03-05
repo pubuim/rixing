@@ -51,6 +51,10 @@ const config = {
     statePending: ['[-]', '[..]', '[...]', 'pending'],
     stateQueued: ['x', '[ ]', 'queued'],
     comment: ['|', '//', '::', '#', '--'],
+  },
+
+  avatar: {
+    prefix: 'https://dn-facecdn.qbox.me'
   }
 }
 
