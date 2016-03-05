@@ -2,6 +2,7 @@
 
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
+const PubuHelper = require('../libs/pubu-helper')
 
 const schema = new Schema({
   channel: {

@@ -24,6 +24,7 @@ const config = {
     }
   },
 
+  icon: 'http://f.pubu.im/sunshine/avatar.png',
   botKey: 'hank',
   cmdKeys: {
     help: cmd(['help', '?'],

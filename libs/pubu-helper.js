@@ -13,3 +13,13 @@ exports.createMessage = function (text, items) {
   }
   return msg
 }
+
+exports.createStableMessage = function (text) {
+  return {
+    text,
+    displayUser: {
+      name: config.botKey,
+      avatarUrl: config.icon || ''
+    }
+  }
+}

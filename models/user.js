@@ -92,6 +92,10 @@ schema.statics.new = function (data) {
   return new User(data)
 }
 
+schema.methods.toMention = function () {
+  return `[${this.name}](user:${this.oid})`
+}
+
 schema.statics.load = function* (oid) {
   const User = mongoose.model('User')
   return yield User.findOne({ oid })

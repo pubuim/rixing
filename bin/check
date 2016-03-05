@@ -1,0 +1,62 @@
+#!/usr/bin/env node
+'use strict'
+
+require('../bootstrap')
+
+const Moment = require('moment')
+const moment = new Moment()
+const date = moment.format('YYYYMMDD')
+const time = moment.format('HHmm')
+
+process.stdout.write(`Ready to check at ${date}${time}\n`)
+
+const Promise = require('bluebird')
+const request = function (url, data) {
+  return new Promise(function (res, rej) {
+    require('request').post(url, { form: data }, function (err, resp) {
+      if (err) { return rej(err) }
+      res(resp)
+    })
+  })
+}
+
+const Section = require('../models/section')
+const User = require('../models/user')
+const Vacation = require('../models/vacation')
+const PubuHelper = require('../libs/pubu-helper')
+
+Section.find({ webhook: { $exists: true }, $or: [ { scheduleStart: time }, { scheduleEnd: time } ] })
+  .then(sections => {
+    return Promise.all(sections.map(s => {
+      return Vacation.find({ team: s.team, channel: s.channel, date }, { user: 1 })
+        .then(vacations => {
+          let vuids = vacations.pluck('user')
+          return User.find({ team: s.team, channel: s.channel, oid: { $nin: vuids } }, { oid: 1, name: 1 })
+            .then(users => {
+              if (!users.length) { return }
+              let mentions = users.map(u => u.toMention())
+              if (s.scheduleStart === date) {
+                process.stdout.write(`sent for morning: ${s.team} ${s.channel} \n`)
+                return request(
+                  s.webhook,
+                  PubuHelper.createStableMessage(`Morning, ${mentions.join(' ')} . \nWhat's your plans today`)
+                )
+              } else if (s.scheduleEnd === date) {
+                process.stdout.write(`sent for evening: ${s.team} ${s.channel} \n`)
+                return request(
+                  s.webhook,
+                  PubuHelper.createStableMessage(`Evening, ${mentions.join(' ')} . \nShow me your ass`)
+                )
+              }
+            })
+        })
+    }))
+  })
+  .then(function () {
+    process.stdout.write('Done', '\n')
+    process.exit()
+  })
+  .catch(function (err) {
+    process.stdout.write(err.stack, '\n')
+    process.exit(1)
+  })

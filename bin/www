@@ -1,0 +1,7 @@
+#!/usr/bin/env node
+'use strict'
+
+require('../bootstrap')
+
+const config = require('config')
+require('../index').listen(config.port)

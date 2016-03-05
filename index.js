@@ -1,8 +1,5 @@
 'use strict'
 
-require('node-extensions')
-require('./bootstrap')
-
 const config = require('config')
 const koa = require('koa')
 const app = koa()
@@ -27,4 +24,4 @@ const router = require('./routers')
 app.use(router.routes())
 app.use(router.allowedMethods())
 
-app.listen(config.port)
+module.exports = app
