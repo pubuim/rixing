@@ -50,7 +50,8 @@ router.post('/command', function* () {
     case 'schedule':
       if (!user) { throw new Error('user not registered') }
       if (!args.length) { throw new Error('Param "date" is required') }
-      section.setSchedule(args)
+      const schedule = args.first
+      section.setSchedule(schedule)
       yield section.save()
       return this.body = PubuHelper.createMessage(`schedule set as: ${section.scheduleText}`)
     case 'hook':
