@@ -9,6 +9,10 @@ const moment = new Moment()
 const date = moment.format('YYYYMMDD')
 const time = moment.format('HHmm')
 const Promise = require('bluebird')
+const debug = require('debug')
+const Section = require('../models/section')
+const PubuHelper = require('../libs/pubu-helper')
+const hintTime = Section.toScheduleHintTime(time)
 const request = function (url, data) {
   return new Promise(function (res, rej) {
     require('request').post(url, { form: data }, function (err, resp) {
@@ -17,44 +21,53 @@ const request = function (url, data) {
     })
   })
 }
-const Section = require('../models/section')
-const User = require('../models/user')
-const Vacation = require('../models/vacation')
-const PubuHelper = require('../libs/pubu-helper')
-const hintTime = Section.toScheduleHintTime(time)
 
 process.stdout.write(`Ready to check at ${date}${time} (hint time: ${hintTime})\n`)
 
 Promise.all([
-  Section.find({ webhook: { $exists: true }, $or: [ { scheduleStart: time }, { scheduleEnd: time } ] })
+  // morning
+  Section.find({ webhook: { $exists: true }, scheduleStart: time })
     .then(sections => {
+      let logger = debug('bin/chk:morning')
+      logger(`found ${sections.length} enabled sections`)
       return Promise.all(sections.map(s => {
-        return Vacation.find({ team: s.team, channel: s.channel, date }, { user: 1 })
-          .then(vacations => {
-            let vuids = vacations.pluck('user')
-            return User.find({ team: s.team, channel: s.channel, oid: { $nin: vuids } }, { oid: 1, name: 1 })
-              .then(users => {
-                if (!users.length) { return }
-                let mentions = users.map(u => u.toMention())
-                if (s.scheduleStart === date) {
-                  process.stdout.write(`sent for morning: ${s.team} ${s.channel} \n`)
-                  return request(
-                    s.webhook,
-                    PubuHelper.createStableMessage(`Morning, ${mentions.join(' ')} . \nWhat's your plans today`)
-                  )
-                } else if (s.scheduleEnd === date) {
-                  process.stdout.write(`sent for evening: ${s.team} ${s.channel} \n`)
-                  return request(
-                    s.webhook,
-                    PubuHelper.createStableMessage(`Evening, ${mentions.join(' ')} . \nShow me your ass`)
-                  )
-                }
-              })
+        return s.findAvailableUsersWhen(date)
+          .then(users => {
+            logger(`section: ${s.id},  available users: ${users.length}`)
+            if (!users.length) { return }
+            let mentions = users.map(u => u.toMention())
+            logger(`sent for morning: ${s.team} ${s.channel}`)
+            return request(
+              s.webhook,
+              PubuHelper.createStableMessage(`Morning, ${mentions.join(' ')} . \nWhat's your plans today`)
+            )
           })
       }))
     }),
-  Section.find({ webhook: { $exists: true }, $or: [ { scheduleStart: hintTime }, { scheduleEnd: hintTime } ] })
+  // evening
+  Section.find({ webhook: { $exists: true }, scheduleEnd: time })
     .then(sections => {
+      let logger = debug('bin/chk:evening')
+      logger(`found ${sections.length} enabled sections`)
+      return Promise.all(sections.map(s => {
+        return s.findAvailableUsersWhen(date)
+          .then(users => {
+            logger(`section: ${s.id},  available users: ${users.length}`)
+            if (!users.length) { return }
+            let mentions = users.map(u => u.toMention())
+            logger(`sent for evening: ${s.team} ${s.channel}`)
+            return request(
+              s.webhook,
+              PubuHelper.createStableMessage(`Evening, ${mentions.join(' ')} . \nShow me your ass`)
+            )
+          })
+      }))
+    }),
+  // hint
+  Section.find({ webhook: { $exists: true }, scheduleEnd: hintTime })
+    .then(sections => {
+      let logger = debug('bin/chk:hint')
+      logger(`${sections.length} sections to hint`)
       return Promise.all(sections.map(s => {
         let url = `${config.siteUrl}/${s.channel}/${moment.format('YYYY-MM-DD')}`
         return request(
