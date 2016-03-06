@@ -10,6 +10,7 @@ const User = require('../../models/user')
 const Vacation = require('../../models/vacation')
 const debug = require('debug')('app:route:idx')
 const config = require('config')
+const moment = require('moment')
 
 router.post('/command', function* () {
   let params = this.pickBody('team_id', 'channel_id', 'user_id', 'user_name', 'user_avatar', true)
@@ -82,61 +83,52 @@ router.post('/outgoing', function* () {
 
   const lines = KeyChecker.translatePlan(params.text)
 
-  let now = new Date()
-
-  now = now.getHours().toString() + now.getMinutes()
+  let now = moment()
 
   const section = yield Section.findOne({
     channel: params.channel_id
   })
 
-  if (now < section.scheduleStart) return this.body = {}
+  if (now.format('HHmm') < section.scheduleStart) {
+    now = now.add(-1, 'day')
+  }
 
-  if (now < section.scheduleEnd) {
-    // 早上
-    const tasks = lines.map(line => {
-      return {
-        text: line.text,
-        status: line.status
-      }
-    })
+  let plan = yield Plan.findByDate(params.user_id, now)
 
-    now = new Date()
-
-    let plan = yield Plan.findByDate(params.user_id, now)
-
-    if (plan) {
-      plan.tasks = tasks
-    } else {
-      plan = new Plan({
-        tasks: tasks,
-        user: params.user_id,
-        channel: params.channel_id,
-        team: params.team_id,
-        created: now,
-        updated: now
-      })
-    }
-
-    yield plan.save()
-
-    return this.body = { text: `@[${params.user_name}](user:${params.user_id}) 收到` }
-  } else {
-    // 晚上
-    const plan = yield Plan.findByDate(params.user_id, new Date())
-
-    if (!plan) return this.body = {}
+  if (plan) {
+    if (!plan.tasks) plan.tasks = []
 
     lines.forEach((line, i) => {
-      var task = plan.tasks[i]
-      task.status = line.status
-      task.comment = line.comment
+      let task = plan.tasks[i] || {}
+
+      if (line.text) task.text = line.text
+      if (line.status !== 'undefined') task.status = line.status
+      if (line.comment) task.comment = line.comment
+
+      if (!plan.tasks[i]) plan.tasks.push(task)
     })
 
-    yield plan.save()
-
-    return this.body = {}
+    plan.updated = new Date()
+  } else {
+    plan = new Plan({
+      tasks: lines.map(line => ({
+        text: line.text,
+        status: line.status,
+        comment: line.comment
+      })),
+      user: params.user_id,
+      channel: params.channel_id,
+      team: params.team_id,
+      created: now,
+      updated: now
+    })
   }
+
+  yield plan.save()
+
+  this.body = PubuHelper.createMessage(`You tasks updated`, plan.tasks.map(t => {
+    return { title: t.text, description: t.comment, color: Plan.toStatusColor(t.status) }
+  }))
 })
 
 module.exports = router
