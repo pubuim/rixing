@@ -44,9 +44,19 @@ schema.statics.load = function* (team, channel) {
 }
 
 schema.methods.setSchedule = function (schedule) {
-  let mathced = schedule.match(/(\d{2}:?\d{2})\b\S\b(\d{2}:?\d{2})/)
+  let mathced = schedule.match(/(\d{2}:?\d{2})[\/|-~](\d{2}:?\d{2})/)
   this.scheduleStart = mathced[0] + mathced[1]
   this.scheduleEnd = mathced[2] + mathced[3]
+}
+
+schema.methods.findAvailableUsersWhen = function (date) {
+  const Vacation = mongoose.model('Vacation')
+  const User = mongoose.model('User')
+  return Vacation.find({ team: this.team, channel: this.channel, date }, { user: 1 })
+    .then(vacations => {
+      let vuids = vacations.pluck('user')
+      return User.find({ team: this.team, channel: this.channel, oid: { $nin: vuids } }, { oid: 1, name: 1 })
+    })
 }
 
 schema.virtual('scheduleText').get(function () {
