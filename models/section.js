@@ -45,8 +45,8 @@ schema.statics.load = function* (team, channel) {
 
 schema.methods.setSchedule = function (schedule) {
   let mathced = schedule.match(/(\d{2}):?(\d{2})[\/|\-~](\d{2}):?(\d{2})/)
-  this.scheduleStart = mathced[0] + mathced[1]
-  this.scheduleEnd = mathced[2] + mathced[3]
+  this.scheduleStart = mathced[1] + mathced[2]
+  this.scheduleEnd = mathced[3] + mathced[4]
 }
 
 schema.methods.findAvailableUsersWhen = function (date) {
