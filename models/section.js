@@ -66,7 +66,7 @@ schema.virtual('scheduleText').get(function () {
 })
 
 schema.statics.toScheduleHintTime = function (time) {
-  return new Moment(time, 'HHmm').add(1, 'hour').format('HHmm')
+  return new Moment(time, 'HHmm').add(-1, 'hour').format('HHmm')
 }
 
 schema.virtual('scheduleHintTime').get(function () {
