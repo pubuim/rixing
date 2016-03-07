@@ -26,40 +26,40 @@ router.post('/command', function* () {
 
   switch (cmd) {
     case 'list':
-      if (!user) { throw new Error('user not registered') }
+      if (!user) { throw new Error('你还没有注册，请先执行 reg 命令') }
       let tasks = yield Plan.listTodayTask(section, user)
-      if (!tasks.length) { return this.body = PubuHelper.createMessage('You have no tasks today') }
-      return this.body = PubuHelper.createMessage(`You have ${tasks.length} tasks today`, tasks.map(t => {
+      if (!tasks.length) { return this.body = PubuHelper.createMessage('你今天还没有任务') }
+      return this.body = PubuHelper.createMessage(`你今天有 ${tasks.length} 条任务`, tasks.map(t => {
         return { title: t.text, description: t.comment, color: Plan.toStatusColor(t.status) }
       }))
     case 'vacation':
-      if (!user) { throw new Error('user not registered') }
+      if (!user) { throw new Error('你还没有注册，请先执行 reg 命令') }
       let date = args.first
-      if (!date) { throw new Error('Param "date" is required') }
+      if (!date) { throw new Error('需要参数 date') }
       let vacation = yield Vacation.add(section, user, date)
-      return this.body = PubuHelper.createMessage(`vacation added at ${vacation.text}`)
+      return this.body = PubuHelper.createMessage(`添加了假期 ${vacation.text}`)
     case 'register':
-      if (user) { throw new Error('user already registered') }
+      if (user) { throw new Error('你已经注册过了') }
       user = User.new(params)
       yield user.save()
-      return this.body = PubuHelper.createMessage('registered !')
+      return this.body = PubuHelper.createMessage('注册成功！')
     case 'clear':
-      if (!user) { throw new Error('user not registered') }
+      if (!user) { throw new Error('你还没有注册，请先执行 reg 命令') }
       yield user.remove()
-      return this.body = PubuHelper.createMessage('removed ...')
+      return this.body = PubuHelper.createMessage('注销成功')
     case 'schedule':
-      if (!user) { throw new Error('user not registered') }
-      if (!args.length) { throw new Error('Param "date" is required') }
+      if (!user) { throw new Error('你还没有注册，请先执行 reg 命令') }
+      if (!args.length) { throw new Error('需要参数 date') }
       const schedule = args.first
       section.setSchedule(schedule)
       yield section.save()
-      return this.body = PubuHelper.createMessage(`schedule set as: ${section.scheduleText}`)
+      return this.body = PubuHelper.createMessage(`工作时间段已设置为: ${section.scheduleText}`)
     case 'hook':
       let webhook = args.first
-      if (!webhook) { throw new Error('Param "webhook" is required') }
+      if (!webhook) { throw new Error('需要参数 webhook') }
       section.webhook = webhook
       yield section.save()
-      return this.body = PubuHelper.createMessage(`webhook set as: ${section.webhook}`)
+      return this.body = PubuHelper.createMessage(`webhook 已设置为: ${section.webhook}`)
     case 'fuck':
       return this.body = PubuHelper.createMessage(swearwordsGenerator())
     case 'help':
@@ -67,9 +67,9 @@ router.post('/command', function* () {
       const toDesription = (key, value) => {
         return `
   **+** **${key}:**
-    **-** **description:** ${value.description}
-    **-** **usage:** \`/${config.botKey} ${key} ${value.params || ''}\`
-    **-** **alias:** \`${value.alias.join(', ')}\``
+    **-** **描述：** ${value.description}
+    **-** **用法：** \`/${config.botKey} ${key} ${value.params || ''}\`
+    **-** **别名：** \`${value.alias.join(', ')}\``
       }
       const text = `\`\`\`
 ${Object.keys(config.cmdKeys).map(key => toDesription(key, config.cmdKeys[key]))}
@@ -126,7 +126,7 @@ router.post('/outgoing', function* () {
 
   yield plan.save()
 
-  this.body = PubuHelper.createMessage(`You tasks updated`, plan.tasks.map(t => {
+  this.body = PubuHelper.createMessage(`今日任务更新成功`, plan.tasks.map(t => {
     return { title: t.text, description: t.comment, color: Plan.toStatusColor(t.status) }
   }))
 })
