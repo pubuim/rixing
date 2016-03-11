@@ -16,7 +16,7 @@ const taskSchema = new Schema({
     type: String,
     enum: ['-1', '0', '1'], // -1 未完成, 0 进行中, 1 已完成
     required: true,
-    default: -1
+    default: '0'
   }
 })
 
@@ -68,8 +68,8 @@ planSchema.statics.listTodayTask = function* (section, user) {
 
 planSchema.statics.toStatusColor = function (status) {
   if (status === '1') { return 'success' }
-  if (status === '-1') { return 'primary' }
-  return 'warning'
+  if (status === '-1') { return 'warning' }
+  return 'info'
 }
 
 module.exports = mongoose.model('Plan', planSchema)

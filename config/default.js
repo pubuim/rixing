@@ -33,7 +33,7 @@ const config = {
     help: cmd(['help', '?'],
       '显示命令帮助'),
     list: cmd(['show', 'list', 'ls', 'l'],
-      '列出你今天的任务'),
+      '列出你今天的计划'),
     vacation: cmd(['vacation', 'vcn', 'v', 'pause', 'p', 'skip'],
       '请假',
         'date # moment date pattern'),

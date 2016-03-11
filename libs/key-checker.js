@@ -44,7 +44,7 @@ function matchState (str) {
   if (keyOfPending) { return { status: '0', prefix: keyOfPending } }
   let keyOfQueued = config.outPrefixes.stateQueued.find(s => str.startsWith(s))
   if (keyOfQueued) { return { status: '-1', prefix: keyOfQueued } }
-  return { status: '-1', prefix: '' }
+  return { status: '0', prefix: '' }
 }
 
 function findComment (str) {
