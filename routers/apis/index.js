@@ -62,6 +62,15 @@ router.post('/command', function* () {
       return this.body = PubuHelper.createMessage(`webhook 已设置为: ${section.webhook}`)
     case 'fuck':
       return this.body = PubuHelper.createMessage(swearwordsGenerator())
+    case 'creators':
+      return this.body = PubuHelper.createMessage(`
+**总监督：**Kuro
+**Logo：**Annie
+**设计：**Remy
+**网页**：Kuro
+**架构：**Chris
+**核心：**Gordomium
+**部署：**Trigged Tang`)
     case 'help':
     default:
       const toDesription = (key, value) => {

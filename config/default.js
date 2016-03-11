@@ -47,7 +47,8 @@ const config = {
     hook: cmd(['webhook', 'hook', 'h'],
       '设置 Webhook URL.',
         'url # standard url pattern'),
-    fuck: cmd(['fuck', 'fucku', 'fuckya', 'hell', 'fck', 'wtf'], '日')
+    fuck: cmd(['fuck', 'fucku', 'fuckya', 'hell', 'fck', 'wtf'], '日'),
+    creators: cmd(['creators'], '创造者们')
   },
   outPrefixes: {
     list: ['-', '+'],
