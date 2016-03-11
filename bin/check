@@ -39,7 +39,7 @@ Promise.all([
             logger(`sent for morning: ${s.team} ${s.channel}`)
             return request(
               s.webhook,
-              PubuHelper.createStableMessage(`Morning, ${mentions.join(' ')} . \nWhat's your plans today`)
+              PubuHelper.createStableMessage(`早上好, ${mentions.join(' ')}。\n请告诉我你们今日的计划。`)
             )
           })
       }))
@@ -58,7 +58,7 @@ Promise.all([
             logger(`sent for evening: ${s.team} ${s.channel}`)
             return request(
               s.webhook,
-              PubuHelper.createStableMessage(`Evening, ${mentions.join(' ')} . \nShow me your ass`)
+              PubuHelper.createStableMessage(`晚上好, ${mentions.join(' ')}。\n请告诉我你们今日计划的执行情况。`)
             )
           })
       }))
@@ -72,7 +72,7 @@ Promise.all([
         let url = `${config.siteUrl}/${s.channel}/${moment.format('YYYY-MM-DD')}`
         return request(
           s.webhook,
-          PubuHelper.createStableMessage(`Today\'s task report: <a href="${url}">${url}</a>`)
+          PubuHelper.createStableMessage(`今日大家的计划报告: <a href="${url}">${url}</a>`)
         )
       }))
     })

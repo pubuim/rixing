@@ -33,7 +33,7 @@ const config = {
     help: cmd(['help', '?'],
       '显示命令帮助'),
     list: cmd(['show', 'list', 'ls', 'l'],
-      '列出你今天的任务'),
+      '列出你今天的计划'),
     vacation: cmd(['vacation', 'vcn', 'v', 'pause', 'p', 'skip'],
       '请假',
         'date # moment date pattern'),
@@ -47,7 +47,8 @@ const config = {
     hook: cmd(['webhook', 'hook', 'h'],
       '设置 Webhook URL.',
         'url # standard url pattern'),
-    fuck: cmd(['fuck', 'fucku', 'fuckya', 'hell', 'fck', 'wtf'], '日')
+    fuck: cmd(['fuck', 'fucku', 'fuckya', 'hell', 'fck', 'wtf'], '日'),
+    creators: cmd(['creators'], '创造者们')
   },
   outPrefixes: {
     list: ['-', '+'],

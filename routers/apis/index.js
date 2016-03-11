@@ -28,8 +28,8 @@ router.post('/command', function* () {
     case 'list':
       if (!user) { throw new Error('你还没有注册，请先执行 reg 命令') }
       let tasks = yield Plan.listTodayTask(section, user)
-      if (!tasks.length) { return this.body = PubuHelper.createMessage('你今天还没有任务') }
-      return this.body = PubuHelper.createMessage(`你今天有 ${tasks.length} 条任务`, tasks.map(t => {
+      if (!tasks.length) { return this.body = PubuHelper.createMessage('你今天还没有计划') }
+      return this.body = PubuHelper.createMessage(`你今天有 ${tasks.length} 条计划`, tasks.map(t => {
         return { title: t.text, description: t.comment, color: Plan.toStatusColor(t.status) }
       }))
     case 'vacation':
@@ -62,6 +62,15 @@ router.post('/command', function* () {
       return this.body = PubuHelper.createMessage(`webhook 已设置为: ${section.webhook}`)
     case 'fuck':
       return this.body = PubuHelper.createMessage(swearwordsGenerator())
+    case 'creators':
+      return this.body = PubuHelper.createMessage(`
+**总监督：**Kuro
+**Logo：**Annie
+**设计：**Remy
+**网页**：Kuro
+**架构：**Chris
+**核心：**Gordomium
+**部署：**Trigged Tang`)
     case 'help':
     default:
       const toDesription = (key, value) => {
@@ -82,7 +91,6 @@ router.post('/outgoing', function* () {
   const params = this.pickBody('team_id', 'text', 'channel_id', 'user_id', 'user_name', 'user_avatar', true)
 
   const lines = KeyChecker.translatePlan(params.text)
-
   let now = moment()
 
   const section = yield Section.findOne({
@@ -100,7 +108,6 @@ router.post('/outgoing', function* () {
 
     lines.forEach((line, i) => {
       let task = plan.tasks[i] || {}
-
       if (line.text) task.text = line.text
       if (line.status !== 'undefined') task.status = line.status
       if (line.comment) task.comment = line.comment
@@ -123,10 +130,9 @@ router.post('/outgoing', function* () {
       updated: now
     })
   }
-
   yield plan.save()
 
-  this.body = PubuHelper.createMessage(`今日任务更新成功`, plan.tasks.map(t => {
+  this.body = PubuHelper.createMessage(`今日计划更新成功`, plan.tasks.map(t => {
     return { title: t.text, description: t.comment, color: Plan.toStatusColor(t.status) }
   }))
 })
