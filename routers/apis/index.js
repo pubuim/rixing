@@ -132,9 +132,16 @@ router.post('/outgoing', function* () {
   }
   yield plan.save()
 
-  this.body = PubuHelper.createMessage(`今日计划更新成功`, plan.tasks.map(t => {
-    return { title: t.text, description: t.comment, color: Plan.toStatusColor(t.status) }
-  }))
+  this.body = PubuHelper.createMessage(
+    `@[${params.user_name}](user:${params.user_id}) 今日计划更新成功`,
+    plan.tasks.map(t => {
+      return {
+        title: t.text,
+        description: t.comment,
+        color: Plan.toStatusColor(t.status)
+      }
+    })
+  )
 })
 
 module.exports = router
