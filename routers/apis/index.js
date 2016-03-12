@@ -42,7 +42,7 @@ router.post('/command', function* () {
       if (user) { throw new Error('你已经注册过了') }
       user = User.new(params)
       yield user.save()
-      return this.body = PubuHelper.createMessage('注册成功！')
+      return this.body = PubuHelper.createMessage('注册成功')
     case 'clear':
       if (!user) { throw new Error('你还没有注册，请先执行 reg 命令') }
       yield user.remove()
@@ -133,7 +133,7 @@ router.post('/outgoing', function* () {
   yield plan.save()
 
   this.body = PubuHelper.createMessage(
-    `@[${params.user_name}](user:${params.user_id}) 今日计划更新成功`,
+    `@[${params.user_name}](user:${params.user_id}) 今日计划已更新`,
     plan.tasks.map(t => {
       return {
         title: t.text,
