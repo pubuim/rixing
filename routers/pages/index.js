@@ -31,7 +31,7 @@ router.get('/:channel/:date?', function* (next) {
 
   plans.forEach(function (plan, i) {
     const user = users[i]
-    plansColumns[Math.floor(i / 3)].push({
+    plansColumns[Math.floor(i % 3)].push({
       username: user.name,
       avatar: `${config.avatar.prefix}/${user.avatar}?imageView2/1/w/74/h/74`,
       tasks: plan.tasks

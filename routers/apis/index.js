@@ -97,11 +97,7 @@ router.post('/outgoing', function* () {
     channel: params.channel_id
   })
 
-  if (now.format('HHmm') < section.scheduleStart) {
-    now = now.add(-1, 'day')
-  }
-
-  let plan = yield Plan.findByDate(params.user_id, now)
+  let plan = yield Plan.findByDate(params.user_id, now.toDate())
 
   if (plan) {
     if (!plan.tasks) plan.tasks = []
@@ -126,8 +122,8 @@ router.post('/outgoing', function* () {
       user: params.user_id,
       channel: params.channel_id,
       team: params.team_id,
-      created: now,
-      updated: now
+      created: now.toDate(),
+      updated: now.toDate()
     })
   }
   yield plan.save()
