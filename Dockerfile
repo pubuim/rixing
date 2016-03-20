@@ -3,5 +3,7 @@ COPY ./ /home/pubuim
 WORKDIR /home/pubuim
 RUN echo "Asia/Shanghai" > /etc/timezone
 RUN dpkg-reconfigure -f noninteractive tzdata
+RUN npm install pm2 -g
 RUN npm install
-CMD ["node", "bin/www"]
+RUN pm2 start bin/www
+CMD ["pm2", "logs"]
